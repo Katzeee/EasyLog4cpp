@@ -1,9 +1,6 @@
 #include "logger.h"
 #include <iostream>
 
-std::string xac::GetThreadName() { return ""; }
-int xac::GetThreadId() { return 1; }
-int xac::GetFiberId() { return 1; }
 
 namespace xac {
 LogLevel::Level LogLevel::ToLevel(const std::string& level_str) {

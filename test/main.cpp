@@ -3,11 +3,7 @@
 using namespace xac;
 
 
-#define LILOG(logger_name, event_level) xac::LogEventWrap::SharedPtr( \
-    new xac::LogEventWrap(xac::LogEvent::SharedPtr( \
-    new xac::LogEvent(__FILE__, time(NULL), 0, __LINE__, \
-    xac::GetThreadId(), xac::GetThreadName(), xac::GetFiberId(), \
-    logger1, event_level))))->GetStringStream() 
+
 
 int main() {
     LoggerManager::Instance();

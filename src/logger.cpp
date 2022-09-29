@@ -10,7 +10,7 @@ LogLevel::Level LogLevel::ToLevel(const std::string& level_str) {
     if (#L == level_str_upper) return LogLevel::Level::L;
     XX(DEBUG)
     XX(INFO)
-    XX(WARNING)
+    XX(WARN)
     XX(ERROR)
     XX(FATAL)
 #undef XX
@@ -23,7 +23,7 @@ const std::string LogLevel::ToString(LogLevel::Level level) {
         case LogLevel::Level::L: return std::string(#L);
         XX(DEBUG)
         XX(INFO)
-        XX(WARNING)
+        XX(WARN)
         XX(ERROR)
         XX(FATAL)
 #undef XX
@@ -102,6 +102,10 @@ LogEvent::LogEvent(
 LogEventWrap::~LogEventWrap() {
     LoggerManager::GetInstance()->GetLogger(event_->logger_name_)->Log(event_); 
 }
+
+const std::string Formatter::COMPLEXPATTERN = "[%p]%d{%Y-%m-%d %H:%M:%S}%T(tid)%t%T[%c]%T%f:%l%T%m%n";
+//const std::string Formatter::COMPLEXPATTERN = "[%p]%d{%Y-%m-%d %H:%M:%S}%T(tid)%t%T(tname)%N%T(fid)%F%T[%c]%T%f:%l%T%m%n";
+const std::string Formatter::SIMPLEPATTERN = "[%p]%T[%c]%T%f:%l%T%m%n";
 
 Formatter::Formatter(const std::string& pattern) : pattern_(pattern) {
     PatternParse();
@@ -208,7 +212,7 @@ void ConsoleLogAppender::DoLog(LogLevel::Level level, LogEvent::SharedPtr event)
             std::cout << "\033[1;32m"; break;
         case LogLevel::Level::INFO:
             std::cout << "\033[1;36m"; break;
-        case LogLevel::Level::WARNING:
+        case LogLevel::Level::WARN:
             std::cout << "\033[1;33m"; break;
         case LogLevel::Level::ERROR:
             std::cout << "\033[1;31m"; break;
@@ -488,9 +492,11 @@ std::shared_ptr<Logger> LoggerManager::GetLogger(const std::string& logger_name)
     if (it != loggers_.end()) {
         return it->second; 
     } else {
+        LRERROR << "No logger named " << logger_name;
         return root_logger_;
     }
 }
+
 
 LoggerManager::LoggerManager() { 
     root_logger_ = std::make_shared<Logger>("root");
@@ -498,7 +504,6 @@ LoggerManager::LoggerManager() {
     root_logger_->AddAppender(stdout_log_appender);
     AddLogger(root_logger_);
 }
-
 
 LoggerManager::~LoggerManager() {
     loggers_.clear();

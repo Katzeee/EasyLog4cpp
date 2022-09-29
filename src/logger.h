@@ -26,17 +26,18 @@
     new xac::LogEventWrap(xac::LogEvent::SharedPtr( \
     new xac::LogEvent(__FILE__, time(NULL), 0, __LINE__, \
     xac::GetThreadId(), xac::GetThreadName(), xac::GetFiberId(), \
-    logger_name, event_level))))->GetStringStream() 
+    LoggerManager::GetInstance()->GetLogger(logger_name)->GetName(), \
+    event_level))))->GetStringStream() 
 
 #define LDEBUG(logger_name) LLOG(logger_name, xac::LogLevel::Level::DEBUG)
 #define LINFO(logger_name) LLOG(logger_name, xac::LogLevel::Level::INFO)
-#define LWARNING(logger_name) LLOG(logger_name, xac::LogLevel::Level::WARNING)
+#define LWARN(logger_name) LLOG(logger_name, xac::LogLevel::Level::WARN)
 #define LERROR(logger_name) LLOG(logger_name, xac::LogLevel::Level::ERROR)
 #define LFATAL(logger_name) LLOG(logger_name, xac::LogLevel::Level::FATAL)
 
 #define LRDEBUG LDEBUG("root")
 #define LRINFO LINFO("root")
-#define LRWARNING LWARNING("root")
+#define LRWARN LWARN("root")
 #define LRERROR LERROR("root")
 #define LRFATAL LFATAL("root")
 
@@ -45,14 +46,14 @@
     new xac::LogEventWrap(xac::LogEvent::SharedPtr( \
     new xac::LogEvent(__FILE__, time(NULL), 0, __LINE__, \
     xac::GetThreadId(), xac::GetThreadName(), xac::GetFiberId(), \
-    xac::LoggerManager::GetInstance().GetLogger(logger_name), \
+    xac::LoggerManager::GetInstance()->GetLogger(logger_name)->GetName(), \
     event_level))))->GetEvent()->Format(format, __VA_ARGS__) 
 #define FLDEBUG(logger_name, format, ...) FLLOG(logger_name, \
     xac::LogLevel::Level::DEBUG, format, __VA_ARGS__)
 #define FLINFO(logger_name, format, ...) FLLOG(logger_name, \
     xac::LogLevel::Level::INFO, format, __VA_ARGS__)
-#define FLWARNING(logger_name, format, ...) FLLOG(logger_name, \
-    xac::LogLevel::Level::WARNING, format, __VA_ARGS__)
+#define FLWARN(logger_name, format, ...) FLLOG(logger_name, \
+    xac::LogLevel::Level::WARN, format, __VA_ARGS__)
 #define FLERROR(logger_name, format, ...) FLLOG(logger_name, \
     xac::LogLevel::Level::ERROR, format, __VA_ARGS__)
 #define FLFATAL(logger_name, format, ...) FLLOG(logger_name, \
@@ -60,7 +61,7 @@
 
 #define FLRDEBUG(format, ...) FLDEBUG("root", format, __VA_ARGS__)
 #define FLRINFO(format, ...) FLINFO("root", format, __VA_ARGS__)
-#define FLRWARNING(format, ...) FLWARNING("root", fromat, __VA_ARGS__)
+#define FLRWARN(format, ...) FLWARNING("root", fromat, __VA_ARGS__)
 #define FLRERROR(format, ...) FLERROR("root", format, _VA__ARGS__)
 #define FLRFATAL(format, ...) FLFATAL("root", format, _VA_ARGS__)
 
@@ -81,7 +82,7 @@ public:
         UNKNOWN = 0,
         DEBUG = 1,
         INFO = 2,
-        WARNING = 3,
+        WARN = 3,
         ERROR = 4,
         FATAL = 5,
   };
@@ -154,8 +155,12 @@ public:
         virtual void Format(
             std::ostream& os, LogLevel::Level level, LogEvent::SharedPtr event) = 0;
     };
+    static const std::string COMPLEXPATTERN;
+    static const std::string SIMPLEPATTERN;
+    
+    
 private:
-    std::string pattern_ = std::string("[%p]%d{%Y-%m-%d %H:%M:%S}%T(tid)%t%T(tname)%N%T(fid)%F%T[%c]%T%f:%l%T%m%n"); // the pattern of formatter
+    std::string pattern_ = std::string(SIMPLEPATTERN); // the pattern of formatter
     std::vector<FormatItemBase::SharedPtr> format_items_; // formatted items
     void PatternParse(); // parse the pattern to format items
 

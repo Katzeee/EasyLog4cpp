@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <optional>
+#include <unistd.h>
 
 namespace xac {
 
@@ -14,7 +15,7 @@ static std::string GetThreadName() {
 }
 
 static int GetThreadId() { 
-    return 1; 
+    return gettid(); 
 }
 
 static int GetFiberId() { 

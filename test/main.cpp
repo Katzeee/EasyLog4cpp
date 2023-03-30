@@ -13,19 +13,19 @@ void filelog_test() {
     LoggerManager::GetInstance()->AddLogger(logger);
 
     auto t = std::thread([](){
-        auto i = 1000;
+        auto i = 10000;
         while(i--) {
             LDEBUG("test") << i;
         }
     });
     auto t1 = std::thread([](){
-        auto i = 1000;
+        auto i = 10000;
         while(i--) {
             LLOG("test", LogLevel::INFO) << i;
         }
     });
     auto t2 = std::thread([](){
-        auto i = 1000;
+        auto i = 10000;
         while(i--) {
             LLOG("test", LogLevel::WARN) << i;
         }
